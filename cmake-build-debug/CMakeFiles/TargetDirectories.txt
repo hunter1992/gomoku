@@ -1,0 +1,3 @@
+/home/zhm/Documents/Scripts/C/Projects/FiveChess/cmake-build-debug/CMakeFiles/FiveChess.dir
+/home/zhm/Documents/Scripts/C/Projects/FiveChess/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/zhm/Documents/Scripts/C/Projects/FiveChess/cmake-build-debug/CMakeFiles/rebuild_cache.dir
