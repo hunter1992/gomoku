@@ -7,18 +7,21 @@
 
 const char PLAYER[2] = {'A', 'B'};
 
-typedef struct {
+typedef struct
+{
     int x;
     int y;
 } Position;
 
-typedef struct {
+typedef struct
+{
     int square[ROW][ROW];
     bool read_permission;
     bool write_permission;
 } Map;
 
-typedef struct {
+typedef struct
+{
     Position location;
     Map map;
     int step_count;
@@ -50,12 +53,14 @@ void print_map(Board *);
 
 // void print_map_test(Board *);
 
-int main() {
+int main()
+{
     // select game mode(human vs human or human vs computer)
     select_game_mode();
     int game_mode = 0;
     scanf("%d", &game_mode);
-    while (1 != game_mode && 2 != game_mode) {
+    while (1 != game_mode && 2 != game_mode)
+    {
         printf("---------------------------------\n");
         printf("You can only choose:\n");
         printf("    1 for Human v.s. Human\n");
@@ -73,11 +78,12 @@ int main() {
     print_map(ptr_board);
     // print_map_test(ptr_board);
 
-    if (1 == game_mode) {
+    if (1 == game_mode)
+    {
         printf("\nYou have selected Human v.s. Human mode.\n");
         // game loop for human v.s. human
-        while (ptr_board->has_winner == false &&
-               ptr_board->step_count < N_TOTAL_STEPS) {
+        while (ptr_board->has_winner == false && ptr_board->step_count < N_TOTAL_STEPS)
+        {
             manager_human_vs_human(ptr_board);
             print_map(ptr_board);
             // print_map_test(ptr_board);
@@ -85,18 +91,21 @@ int main() {
             judge_game(ptr_board);
         }
         // 所有位置均被占满，但仍然没有胜者
-        if (ptr_board->has_winner == false &&
-            ptr_board->step_count == N_TOTAL_STEPS) {
+        if (ptr_board->has_winner == false && ptr_board->step_count == N_TOTAL_STEPS)
+        {
             manager_human_vs_computer();
             printf("==> All position has picked and still no winner, tie.\n");
         }
-    } else {
+    }
+    else
+    {
         printf("to be continued\n");
     }
     return 0;
 }
 
-void select_game_mode() {
+void select_game_mode()
+{
     printf("         ---------------------------------\n");
     printf("         ======= It's time to play! ======\n");
     printf("         ---------------------------------\n");
@@ -106,31 +115,34 @@ void select_game_mode() {
     printf("Your choice is: ");
 }
 
-void init_board(Board *p_board) {
+void init_board(Board *p_board)
+{
     printf("\n");
     printf("         -------------------------------\n");
     printf("         ======= Welcome to play! ======\n");
     printf("         -------------------------------\n");
-    printf(
-        "==> Rules you need to know:\n      1. A go first;\n      2. Your "
-        "input should be shaped as \"x,y\"\n");
+    printf("==> Rules you need to know:\n      1. A go first;\n      2. Your "
+           "input should be shaped as \"x,y\"\n");
     printf("--------------------------------------------------\n");
     // step1: init the map
-    for (int i = 0; i < ROW; i++) {
-        for (int j = 0; j < ROW; j++) {
+    for (int i = 0; i < ROW; i++)
+    {
+        for (int j = 0; j < ROW; j++)
+        {
             p_board->map.square[i][j] = 2;
         }
     }
     // init observer array
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++)
+    {
         p_board->observer[i] = 0;
     }
     p_board->map.write_permission = false;
     p_board->map.read_permission = false;
 
     // step2: init the position
-    p_board->location.x = 20;  // 20 is a wrong value
-    p_board->location.y = 20;  // avoid init position is written
+    p_board->location.x = 20; // 20 is a wrong value
+    p_board->location.y = 20; // avoid init position is written
 
     // step3: put the total step to 0
     p_board->step_count = 0;
@@ -139,12 +151,12 @@ void init_board(Board *p_board) {
     p_board->has_winner = false;
 }
 
-void manager_human_vs_human(Board *p_board) {
+void manager_human_vs_human(Board *p_board)
+{
     // 确定当前步该由谁下子
     int step_counter = (p_board->step_count) % 2;
     char current_player = PLAYER[step_counter];
-    printf("==> Player %c's turn              <Round:%d, step:%d>\n",
-           current_player, (p_board->step_count) / 2 + 1,
+    printf("==> Player %c's turn              <Round:%d, step:%d>\n", current_player, (p_board->step_count) / 2 + 1,
            p_board->step_count + 1);
     printf("    %c's choice is:", current_player);
 
@@ -154,12 +166,14 @@ void manager_human_vs_human(Board *p_board) {
     bool ok = false;
     int tmp_x = 0, tmp_y = 0;
     Position tmp_position = {tmp_x, tmp_y};
-    do {
+    do
+    {
         get_input(&tmp_position, &ok);
     } while (ok == false);
 
     // 确保输入的位置是可以下子的
-    while (false == check_input(p_board, &tmp_position)) {
+    while (false == check_input(p_board, &tmp_position))
+    {
         p_board->map.read_permission = true;
         get_input(&tmp_position, &ok);
     }
@@ -168,49 +182,64 @@ void manager_human_vs_human(Board *p_board) {
     write_map(p_board);
 }
 
-void manager_human_vs_computer() { printf("--> Computer's move is done!\n"); }
+void manager_human_vs_computer()
+{
+    printf("--> Computer's move is done!\n");
+}
 
-void get_input(Position *p_position, bool *p_ok) {
+void get_input(Position *p_position, bool *p_ok)
+{
     int c;
     int tmp_x, tmp_y;
     scanf("%d,%d", &tmp_x, &tmp_y);
     while ((c = getchar()) != EOF && c != '\n')
-        ;  //!!!清除输入缓冲区中的回车，耗了5个小时。。。
-    if (tmp_x == 0 || tmp_y == 0) {
-        printf(
-            "--> You should enter a number between 1 and 16\n    enter again:");
+        ; //!!!清除输入缓冲区中的回车，耗了5个小时。。。
+    if (tmp_x == 0 || tmp_y == 0)
+    {
+        printf("--> You should enter a number between 1 and 16\n    enter again:");
         *p_ok = false;
-    } else {
+    }
+    else
+    {
         p_position->x = tmp_x - 1;
         p_position->y = tmp_y - 1;
         *p_ok = true;
     }
 }
 
-bool check_input(Board *p_board, Position *p_input) {
-    if (p_board->map.read_permission == false) {
-        printf(
-            "Error: read map permission denied. From func: check_position\n");
+bool check_input(Board *p_board, Position *p_input)
+{
+    if (p_board->map.read_permission == false)
+    {
+        printf("Error: read map permission denied. From func: check_position\n");
         return false;
-    } else {
-        if (p_input->x < 0 || p_input->x > 16) {
+    }
+    else
+    {
+        if (p_input->x < 0 || p_input->x > 16)
+        {
             printf("--> The x you entered is out of range,\n    enter again:");
             p_board->map.read_permission = false;
             p_board->map.write_permission = false;
             return false;
-        } else if (p_input->y < 0 || p_input->y > 16) {
+        }
+        else if (p_input->y < 0 || p_input->y > 16)
+        {
             printf("--> The y you entered is out of range,\n    enter again:");
             p_board->map.read_permission = false;
             p_board->map.write_permission = false;
             return false;
-        } else if (read_map(p_board, p_input) != 2) {
-            printf(
-                "--> The location you choose is already picked,\n    enter "
-                "again:");
+        }
+        else if (read_map(p_board, p_input) != 2)
+        {
+            printf("--> The location you choose is already picked,\n    enter "
+                   "again:");
             p_board->map.read_permission = false;
             p_board->map.write_permission = false;
             return false;
-        } else {
+        }
+        else
+        {
             p_board->map.read_permission = false;
             p_board->map.write_permission = false;
             return true;
@@ -218,30 +247,37 @@ bool check_input(Board *p_board, Position *p_input) {
     }
 }
 
-void board_observer(Board *p_board) {
+void board_observer(Board *p_board)
+{
     int player_mark = (p_board->step_count) % 2;
-    int check_direct[8][2] = {{0, 1},  {1, 1},   {1, 0},  {1, -1},
-                              {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
+    int check_direct[8][2] = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
     // 对observer数组置0
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++)
+    {
         p_board->observer[i] = 0;
     }
-    for (int i = 0; i < 8; ++i) {
-        for (int j = 1; j < N_WIN_STEP; ++j) {
+    for (int i = 0; i < 8; ++i)
+    {
+        for (int j = 1; j < N_WIN_STEP; ++j)
+        {
             // 向每个方向跨j步远，统计那个位置上的情况
             if ((p_board->location.x + j * check_direct[i][0]) < 0 ||
                 (p_board->location.x + j * check_direct[i][0]) > 15 ||
                 (p_board->location.y + j * check_direct[i][1]) < 0 ||
-                (p_board->location.y + j * check_direct[i][1]) > 15) {
-                break;  // 对非常规情况进行规避
-            } else {
-                int position_value =
-                    p_board->map
-                        .square[p_board->location.x + j * check_direct[i][0]]
-                               [p_board->location.y + j * check_direct[i][1]];
-                if (player_mark == position_value) {
+                (p_board->location.y + j * check_direct[i][1]) > 15)
+            {
+                break; // 对非常规情况进行规避
+            }
+            else
+            {
+                int position_value = p_board->map.square[p_board->location.x + j * check_direct[i][0]]
+                                                        [p_board->location.y + j * check_direct[i][1]];
+                if (player_mark == position_value)
+                {
                     p_board->observer[i] += 1;
-                } else {
+                }
+                else
+                {
                     break;
                 }
             }
@@ -249,8 +285,10 @@ void board_observer(Board *p_board) {
     }
 }
 
-void judge_game(Board *p_board) {
-    if (p_board->map.read_permission == false) {
+void judge_game(Board *p_board)
+{
+    if (p_board->map.read_permission == false)
+    {
         printf("Error: read map permission denied. From func: judge_game\n");
         return;
     }
@@ -267,26 +305,29 @@ void judge_game(Board *p_board) {
 
     board_observer(p_board);
     // 对获取的周围情况进行评判是否有获胜者产生
-    for (int k = 0; k < 4; ++k) {
-        if ((p_board->observer[k] + p_board->observer[k + 4]) ==
-            (N_WIN_STEP - 1)) {
+    for (int k = 0; k < 4; ++k)
+    {
+        if ((p_board->observer[k] + p_board->observer[k + 4]) == (N_WIN_STEP - 1))
+        {
             p_board->has_winner = true;
             break;
-        } else {
+        }
+        else
+        {
             p_board->has_winner = false;
         }
     }
-    if (p_board->has_winner == true) {
+    if (p_board->has_winner == true)
+    {
         printf("==> ===============================\n");
-        printf("    |      The winner is %c        |\n",
-               PLAYER[(p_board->step_count) % 2]);
+        printf("    |      The winner is %c        |\n", PLAYER[(p_board->step_count) % 2]);
         printf("    |    Congratulations !!!      |\n");
-        printf("    |      %c used %d moves         |\n",
-               PLAYER[(p_board->step_count) % 2],
-               (int)((p_board->step_count + 1) / 2 +
-                     (p_board->step_count + 1) % 2));
+        printf("    |      %c used %d moves         |\n", PLAYER[(p_board->step_count) % 2],
+               (int)((p_board->step_count + 1) / 2 + (p_board->step_count + 1) % 2));
         printf("    ===============================\n");
-    } else {
+    }
+    else
+    {
         printf("==> No winner. Please continue...\n");
     }
 
@@ -294,52 +335,67 @@ void judge_game(Board *p_board) {
     ++p_board->step_count;
 }
 
-int read_map(Board *p_board, Position *p_position) {
-    if (p_board->map.read_permission == false) {
+int read_map(Board *p_board, Position *p_position)
+{
+    if (p_board->map.read_permission == false)
+    {
         printf("Error: read map permission denied. From func: read_map\n");
         return 2;
-    } else {
+    }
+    else
+    {
         p_board->map.read_permission = false;
         p_board->map.write_permission = false;
         return p_board->map.square[p_position->x][p_position->y];
     }
 }
 
-void write_map(Board *p_board) {
-    if (p_board->map.write_permission == false) {
+void write_map(Board *p_board)
+{
+    if (p_board->map.write_permission == false)
+    {
         printf("Error: write map permission denied. From func: write_map\n");
         return;
-    } else {
-        p_board->map.square[p_board->location.x][p_board->location.y] =
-            (p_board->step_count) % 2;
-        printf("==> Ok, player %c's input is (%d, %d)\n",
-               PLAYER[(p_board->step_count) % 2], p_board->location.x + 1,
+    }
+    else
+    {
+        p_board->map.square[p_board->location.x][p_board->location.y] = (p_board->step_count) % 2;
+        printf("==> Ok, player %c's input is (%d, %d)\n", PLAYER[(p_board->step_count) % 2], p_board->location.x + 1,
                p_board->location.y + 1);
         p_board->map.read_permission = false;
         p_board->map.write_permission = false;
     }
 }
 
-void print_map(Board *p_board) {
-    for (int i = 0; i < ROW + 1; i++) {
-        for (int j = 0; j < ROW + 1; j++) {
-            if (0 == i) {
+void print_map(Board *p_board)
+{
+    for (int i = 0; i < ROW + 1; i++)
+    {
+        for (int j = 0; j < ROW + 1; j++)
+        {
+            if (0 == i)
+            {
                 printf("%2d ", j);
-            } else if (0 == j) {
+            }
+            else if (0 == j)
+            {
                 printf("%2d ", i);
-            } else {
-                switch (p_board->map.square[i - 1][j - 1]) {
-                    case 0:
-                        printf(" X ");
-                        break;
-                    case 1:
-                        printf(" O ");
-                        break;
-                    case 2:
-                        printf(" . ");
-                        break;
-                    default:
-                        printf("Error during print map");
+            }
+            else
+            {
+                switch (p_board->map.square[i - 1][j - 1])
+                {
+                case 0:
+                    printf(" X ");
+                    break;
+                case 1:
+                    printf(" O ");
+                    break;
+                case 2:
+                    printf(" . ");
+                    break;
+                default:
+                    printf("Error during print map");
                 }
             }
         }
