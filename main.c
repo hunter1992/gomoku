@@ -3,7 +3,7 @@
 
 #define ROW 16
 #define N_TOTAL_STEPS 256
-#define N_WIN_STEP 3
+#define N_WIN_STEPS 3
 
 const char PLAYER[2] = {'A', 'B'};
 
@@ -258,7 +258,7 @@ void board_observer(Board *p_board)
     }
     for (int i = 0; i < 8; ++i)
     {
-        for (int j = 1; j < N_WIN_STEP; ++j)
+        for (int j = 1; j < N_WIN_STEPS; ++j)
         {
             // 向每个方向跨j步远，统计那个位置上的情况
             if ((p_board->location.x + j * check_direct[i][0]) < 0 ||
@@ -307,7 +307,7 @@ void judge_game(Board *p_board)
     // 对获取的周围情况进行评判是否有获胜者产生
     for (int k = 0; k < 4; ++k)
     {
-        if ((p_board->observer[k] + p_board->observer[k + 4]) == (N_WIN_STEP - 1))
+        if ((p_board->observer[k] + p_board->observer[k + 4]) == (N_WIN_STEPS - 1))
         {
             p_board->has_winner = true;
             break;
